@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPX to 3D Flyover</title>
+    <style>
+      #cesiumContainer { width: 100%; height: 100vh; margin: 0; padding: 0; overflow: hidden; }
+      #uiContainer { position: absolute; top: 10px; left: 10px; z-index: 10; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px; font-family: sans-serif; }
+      .control-group { margin-bottom: 10px; }
+      button { cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div id="uiContainer">
+      <div class="control-group">
+        <label>GPX File: </label>
+        <input type="file" id="gpxInput" accept=".gpx" />
+      </div>
+      <div id="trackSelection" style="display:none; margin-bottom: 10px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 3px;">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+          <label style="font-weight: bold;">Select Tracks:</label>
+          <button id="selectAllTracks" style="font-size: 10px; padding: 2px 5px;">All</button>
+        </div>
+        <div id="trackList" style="max-height: 150px; overflow-y: auto;"></div>
+      </div>
+      <div id="controls" style="display:none;">
+        <div class="control-group">
+          <button id="startFlyover">Start Flyover</button>
+          <button id="stopFlyover">Stop</button>
+        </div>
+        <div class="control-group">
+          <label>Altitude Offset (m): </label>
+          <input type="number" id="altitudeOffset" value="2000" />
+        </div>
+        <div class="control-group">
+          <label>Camera Pitch (deg): </label>
+          <input type="number" id="cameraPitch" value="-30" />
+        </div>
+        <div class="control-group">
+          <label>Flyover Speed (m/s): </label>
+          <input type="range" id="flyoverSpeed" min="1" max="3000" value="100" style="width: 200px;" />
+          <span id="speedValue">100</span>
+        </div>
+        <div class="control-group" style="display: flex; gap: 10px;">
+          <div>
+            <label>Path Color: </label>
+            <input type="color" id="pathColor" value="#ffff00" />
+          </div>
+          <div>
+            <label>Width: </label>
+            <input type="number" id="pathWidth" value="3" style="width: 40px;" />
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Camera Style: </label>
+          <select id="cameraStyle" style="background: #333; color: white;">
+            <option value="steady">Steady Follow</option>
+            <option value="orbit">Circular Orbit</option>
+            <option value="pendulum">Pendulum Swing</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Smoothing (Window Size): </label>
+          <input type="range" id="pathSmoothing" min="1" max="500" value="50" style="width: 200px;" />
+          <span id="smoothingValue">50</span>
+        </div>
+        <div class="control-group">
+          <label>Camera Momentum: </label>
+          <input type="range" id="cameraMomentum" min="0" max="95" value="80" style="width: 200px;" />
+          <span id="momentumValue">80</span>%
+        </div>
+        <div class="control-group">
+          <label>Fixed Bearing (deg): </label>
+          <input type="range" id="cameraBearing" min="0" max="359" value="0" />
+          <span id="bearingValue">0</span>
+        </div>
+        <div class="control-group">
+          <button id="resetBearing">Reset to Track Bearing</button>
+        </div>
+        <div class="control-group" id="estimateContainer" style="display:none; color: #4CAF50; font-weight: bold;">
+          <label>Estimated Video Length: </label>
+          <span id="estimatedLength">0s</span>
+        </div>
+        <div class="control-group">
+          <button id="exportVideo">Export Video</button>
+        </div>
+        <div id="exportProgress" style="display:none; margin-top:10px;">
+          <div style="width:100%; background:#333; height:20px; border-radius:10px;">
+            <div id="progressBar" style="width:0%; background:#4CAF50; height:100%; border-radius:10px; transition:width 0.3s;"></div>
+          </div>
+          <p id="progressStatus" style="font-size:12px; margin-top:5px;">Starting export...</p>
+        </div>
+      </div>
+    </div>
+    <div id="cesiumContainer"></div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

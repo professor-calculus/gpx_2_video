@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Manual" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Yosemite Valley Walk</name>
+    <trkseg>
+      <trkpt lat="37.7455" lon="-119.5936"><ele>1200</ele></trkpt>
+      <trkpt lat="37.7465" lon="-119.5946"><ele>1210</ele></trkpt>
+      <trkpt lat="37.7475" lon="-119.5956"><ele>1220</ele></trkpt>
+      <trkpt lat="37.7485" lon="-119.5966"><ele>1230</ele></trkpt>
+      <trkpt lat="37.7495" lon="-119.5976"><ele>1240</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

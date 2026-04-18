@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+gpxpy
+playwright
+ffmpeg-python
+python-multipart
