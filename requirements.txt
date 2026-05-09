@@ -4,3 +4,4 @@ gpxpy
 playwright
 ffmpeg-python
 python-multipart
+rich

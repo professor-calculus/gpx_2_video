@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -16,11 +17,16 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 # Global progress state
 export_status = {"progress": 0, "status": "Idle", "is_running": False}
 last_filename = "flyover_export"
+
+def remove_file(path: str):
+    if os.path.exists(path):
+        os.remove(path)
 
 class ExportRequest(BaseModel):
     points: list
@@ -58,7 +64,7 @@ async def receive_frame(frame_id: int, request: Request):
     return {"status": "ok"}
 
 @app.post("/finalize_video")
-async def finalize_video(fps: int = 25):
+async def finalize_video(background_tasks: BackgroundTasks, fps: int = 25):
     import ffmpeg
     output_name = f"uploads/{last_filename}.mov"
     print(f"Encoding video with ProRes to {output_name}...")
@@ -72,7 +78,9 @@ async def finalize_video(fps: int = 25):
         )
         if os.path.exists("temp_frames"):
             shutil.rmtree("temp_frames")
-        return {"status": "Complete", "file": output_name}
+        
+        background_tasks.add_task(remove_file, output_name)
+        return FileResponse(output_name, filename=f"{last_filename}.mov")
     except Exception as e:
         return {"status": "Error", "message": str(e)}
 

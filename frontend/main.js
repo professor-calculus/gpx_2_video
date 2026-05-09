@@ -215,14 +215,40 @@ async function fastInBrowserExport() {
   }
 
   document.getElementById('progressStatus').innerText = "Encoding Final Video...";
-  await fetch('http://localhost:8000/finalize_video', { method: 'POST' });
+  const response = await fetch('http://localhost:8000/finalize_video', { method: 'POST' });
+  
+  if (response.ok) {
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Try to get filename from Content-Disposition header
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = 'flyover_export.mov';
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1];
+      }
+    }
+    
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    alert("Export Complete! Your download should start shortly.");
+  } else {
+    const errorData = await response.json();
+    alert("Export failed: " + (errorData.message || response.statusText));
+  }
 
   // Restore original UI size
   container.style.width = originalWidth;
   container.style.height = originalHeight;
   viewer.resize();
 
-  alert("Export Complete! Check flyover_export.mov");
   exportBtn.disabled = false;
 }
 
