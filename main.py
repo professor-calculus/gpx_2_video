@@ -20,6 +20,7 @@ app.add_middleware(
 
 # Global progress state
 export_status = {"progress": 0, "status": "Idle", "is_running": False}
+last_filename = "flyover_export"
 
 class ExportRequest(BaseModel):
     points: list
@@ -32,7 +33,9 @@ class ExportRequest(BaseModel):
 
 @app.post("/upload")
 async def upload_gpx(file: UploadFile = File(...)):
+    global last_filename
     file_location = f"uploads/{file.filename}"
+    last_filename = os.path.splitext(file.filename)[0]
     os.makedirs("uploads", exist_ok=True)
     with open(file_location, "wb+") as f:
         shutil.copyfileobj(file.file, f)
@@ -57,8 +60,8 @@ async def receive_frame(frame_id: int, request: Request):
 @app.post("/finalize_video")
 async def finalize_video(fps: int = 25):
     import ffmpeg
-    output_name = "flyover_export.mov"
-    print("Encoding video with ProRes...")
+    output_name = f"uploads/{last_filename}.mov"
+    print(f"Encoding video with ProRes to {output_name}...")
     try:
         (
             ffmpeg

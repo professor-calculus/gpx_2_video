@@ -127,6 +127,7 @@ async function fastInBrowserExport() {
   
   let camLat = smoothedPath[0].lat, camLon = smoothedPath[0].lon, camAlt = smoothedPath[0].alt + altOffset;
   let camHeading = manualBearing !== null ? manualBearing : calculateHeading(smoothedPath[0], smoothedPath[1]);
+  let traveled = 0;
   
   // Drone-like position state
   const horizDistance = altOffset / Math.tan(Math.abs(pitch));
@@ -148,7 +149,8 @@ async function fastInBrowserExport() {
       else currentV = speedMPS;
     }
     
-    const traveled = Math.min(Math.max(0, (elapsed - T_start_pause) * (currentV / fps)), currentDist); 
+    traveled += currentV * (1 / fps);
+    traveled = Math.min(traveled, currentDist); 
     const isOvertime = (elapsed > T_start_pause + T_move);
     
     const seg = segments.find(s => traveled >= s.startDist && traveled <= s.startDist + s.dist) || segments[segments.length-1];
